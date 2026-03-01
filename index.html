@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANTI — The Anti-Meme Token</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #CC0000;
+    --red-dim: #880000;
+    --black: #060606;
+    --dark: #0e0e0e;
+    --card: #141414;
+    --border: #222222;
+    --muted: #555555;
+    --light: #999999;
+    --white: #f0f0f0;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+    --font-body: 'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.7;
+    cursor: crosshair;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ─────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ───────────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(6,6,6,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--red);
+    text-decoration: none;
+    cursor: crosshair;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--light);
+    text-decoration: none;
+    cursor: crosshair;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--red); }
+
+  .nav-cta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--red);
+    border: none;
+    padding: 10px 20px;
+    cursor: crosshair;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .nav-cta:hover { background: var(--red-dim); }
+
+  /* ── PAGES ─────────────────────────────────────── */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 60px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .page.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── HERO ──────────────────────────────────────── */
+  #hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 120px 48px 80px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: clamp(200px, 30vw, 420px);
+    color: rgba(204,0,0,0.04);
+    letter-spacing: -10px;
+    pointer-events: none;
+    user-select: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    animation: breathe 8s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.02); }
+  }
+
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(80px, 16vw, 200px);
+    letter-spacing: 12px;
+    color: var(--white);
+    line-height: 0.9;
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+
+  .hero-title span { color: var(--red); }
+
+  .hero-sub {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--light);
+    max-width: 540px;
+    margin: 0 auto 48px;
+    animation: fadeUp 0.8s 0.2s ease both;
+    font-style: italic;
+  }
+
+  .hero-sub em { color: var(--white); font-style: normal; }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--red);
+    color: var(--black);
+    border: none;
+    padding: 16px 36px;
+    cursor: crosshair;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-primary:hover { background: var(--red-dim); transform: translateY(-1px); }
+
+  .btn-ghost {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--light);
+    border: 1px solid var(--border);
+    padding: 16px 36px;
+    cursor: crosshair;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-ghost:hover { border-color: var(--red); color: var(--red); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 64px;
+    margin-top: 72px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+
+  .stat { text-align: center; }
+
+  .stat-val {
+    font-family: var(--font-display);
+    font-size: 36px;
+    letter-spacing: 2px;
+    color: var(--red);
+    display: block;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── INNER PAGES ───────────────────────────────── */
+  .inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 80px 48px 120px;
+  }
+
+  .page-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 8vw, 96px);
+    letter-spacing: 6px;
+    color: var(--white);
+    line-height: 0.95;
+    margin-bottom: 48px;
+  }
+
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: var(--red);
+    margin-bottom: 48px;
+  }
+
+  /* ── HOW IT WORKS ──────────────────────────────── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 32px;
+    padding: 40px 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateX(-16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .step.visible { opacity: 1; transform: translateX(0); }
+
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 64px;
+    color: var(--red);
+    line-height: 1;
+    opacity: 0.3;
+  }
+
+  .step-content {}
+
+  .step-title {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .step-body {
+    color: var(--light);
+    font-size: 13px;
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  .step-body em { color: var(--white); font-style: normal; }
+
+  /* ── TOKENOMICS ────────────────────────────────── */
+  .toko-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+
+  .toko-cell {
+    background: var(--card);
+    padding: 28px 32px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .toko-cell.visible { opacity: 1; transform: translateY(0); }
+
+  .toko-cell-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .toko-cell-val {
+    font-family: var(--font-display);
+    font-size: 32px;
+    letter-spacing: 2px;
+    color: var(--red);
+    margin-bottom: 4px;
+  }
+
+  .toko-cell-note {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .alloc-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .alloc-table th {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .alloc-table td {
+    padding: 14px 16px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--light);
+  }
+
+  .alloc-table tr:last-child td { border-bottom: none; }
+
+  .alloc-table td:first-child { color: var(--white); }
+  .alloc-table td:nth-child(2) { color: var(--red); font-family: var(--font-display); font-size: 18px; letter-spacing: 1px; }
+  .alloc-table td:last-child { font-style: italic; font-size: 11px; }
+
+  .alloc-table tr.lp td { background: rgba(204,0,0,0.05); }
+
+  /* ── RITUAL BURN ───────────────────────────────── */
+  .burn-hero {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    padding: 48px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .burn-hero::before {
+    content: '🔥';
+    position: absolute;
+    font-size: 200px;
+    right: -20px;
+    top: -20px;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  .burn-hero-title {
+    font-family: var(--font-display);
+    font-size: 56px;
+    letter-spacing: 4px;
+    color: var(--red);
+    margin-bottom: 16px;
+  }
+
+  .burn-hero-sub {
+    font-size: 13px;
+    color: var(--light);
+    font-style: italic;
+    max-width: 600px;
+    line-height: 1.8;
+  }
+
+  .burn-hero-sub em { color: var(--white); font-style: normal; }
+
+  .burn-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .burn-step {
+    background: var(--card);
+    padding: 24px 32px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .burn-step.visible { opacity: 1; transform: translateX(0); }
+
+  .burn-step-num {
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: var(--red);
+    opacity: 0.25;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 40px;
+  }
+
+  .burn-step-title {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .burn-step-body {
+    font-size: 12px;
+    color: var(--light);
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  .burn-step-body em { color: var(--white); font-style: normal; }
+
+  /* ── GRAVEYARD ─────────────────────────────────── */
+  .graveyard-intro {
+    font-size: 13px;
+    color: var(--light);
+    font-style: italic;
+    max-width: 640px;
+    line-height: 1.9;
+    margin-bottom: 48px;
+  }
+
+  .graveyard-intro em { color: var(--white); font-style: normal; }
+
+  .tombstones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+
+  .tombstone {
+    background: var(--card);
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .tombstone.visible { opacity: 1; transform: translateY(0); }
+
+  .tombstone.empty {
+    border: 1px dashed var(--border);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tombstone-rip {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .tombstone-name {
+    font-family: var(--font-display);
+    font-size: 32px;
+    letter-spacing: 2px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .tombstone-date {
+    font-size: 10px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  .tombstone-epitaph {
+    font-size: 10px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .tombstone-cross {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .tombstone.empty .tombstone-waiting {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--border);
+    text-transform: uppercase;
+  }
+
+  .graveyard-note {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── BUY ───────────────────────────────────────── */
+  .buy-hero {
+    text-align: center;
+    padding: 80px 0 64px;
+  }
+
+  .buy-title {
+    font-family: var(--font-display);
+    font-size: clamp(64px, 10vw, 120px);
+    letter-spacing: 8px;
+    color: var(--white);
+    margin-bottom: 16px;
+    line-height: 0.95;
+  }
+
+  .buy-title span { color: var(--red); }
+
+  .buy-sub {
+    font-size: 12px;
+    color: var(--light);
+    font-style: italic;
+    margin-bottom: 48px;
+  }
+
+  .buy-sub em { color: var(--white); font-style: normal; }
+
+  .buy-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+
+  .buy-step {
+    background: var(--card);
+    padding: 36px 28px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .buy-step.visible { opacity: 1; transform: translateY(0); }
+
+  .buy-step-num {
+    font-family: var(--font-display);
+    font-size: 64px;
+    color: var(--red);
+    opacity: 0.2;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .buy-step-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .buy-step-body {
+    font-size: 11px;
+    color: var(--light);
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  .buy-cta-block {
+    background: var(--red);
+    padding: 48px;
+    text-align: center;
+  }
+
+  .buy-cta-block p {
+    font-family: var(--font-display);
+    font-size: 32px;
+    letter-spacing: 4px;
+    color: var(--black);
+    margin-bottom: 24px;
+  }
+
+  .buy-cta-block a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--black);
+    color: var(--white);
+    padding: 16px 40px;
+    text-decoration: none;
+    cursor: crosshair;
+    transition: opacity 0.2s;
+  }
+
+  .buy-cta-block a:hover { opacity: 0.8; }
+
+  .contract-box {
+    border: 1px solid var(--border);
+    padding: 24px 32px;
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .contract-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .contract-addr {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--light);
+    letter-spacing: 1px;
+  }
+
+  .contract-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: #005500;
+    padding: 6px 14px;
+    white-space: nowrap;
+  }
+
+  /* ── FOOTER ────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 24px;
+    letter-spacing: 4px;
+    color: var(--red);
+  }
+
+  .footer-note {
+    font-size: 10px;
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .footer-links a {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    cursor: crosshair;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--red); }
+
+  /* ── RED LINE ACCENT ───────────────────────────── */
+  .red-line {
+    width: 100%;
+    height: 1px;
+    background: var(--red);
+    margin: 48px 0;
+    opacity: 0.3;
+  }
+
+  /* ── SCROLL ANIMATIONS ─────────────────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('home')">ANTI</a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('how')">How It Works</a></li>
+    <li><a href="#" onclick="showPage('tokenomics')">Tokenomics</a></li>
+    <li><a href="#" onclick="showPage('burn')">Ritual Burn</a></li>
+    <li><a href="#" onclick="showPage('graveyard')">Graveyard</a></li>
+  </ul>
+  <a class="nav-cta" href="#" onclick="showPage('buy')">Buy ANTI</a>
+</nav>
+
+<!-- ── PAGE: HOME ──────────────────────────────────────────────────────── -->
+<div class="page active" id="page-home">
+  <section id="hero">
+    <div class="hero-bg-text">ANTI</div>
+    <h1 class="hero-title"><span>ANTI</span></h1>
+    <p class="hero-sub">
+      The <em>last meme token</em> you will ever need to buy.<br>
+      Every meme ends. <em>ANTI is where they go.</em>
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#" onclick="showPage('buy')">Buy ANTI</a>
+      <a class="btn-ghost" href="#" onclick="showPage('how')">How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-val">1B</span>
+        <span class="stat-label">Total Supply</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">92%</span>
+        <span class="stat-label">LP Locked</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">0/0</span>
+        <span class="stat-label">Tax</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">∞</span>
+        <span class="stat-label">Memes Absorbed</span>
+      </div>
+    </div>
+    <span class="hero-scroll">↓ Scroll</span>
+  </section>
+  <footer style="justify-content: center; flex-direction: column; align-items: center; gap: 20px; text-align: center;">
+    <span class="footer-logo">ANTI</span>
+    <p class="footer-note">Not financial advice. Not a whitepaper. Not a promise.<br>Just the inevitable destination of all meme liquidity.</p>
+    <div class="footer-links">
+      <a href="#" onclick="showPage('how')">How It Works</a>
+      <a href="#" onclick="showPage('tokenomics')">Tokenomics</a>
+      <a href="#">Twitter/X</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ── PAGE: HOW IT WORKS ──────────────────────────────────────────────── -->
+<div class="page" id="page-how">
+  <div class="inner">
+    <span class="page-eyebrow">01 — How It Works</span>
+    <h2 class="page-title">THE MECHANISM</h2>
+    <div class="divider"></div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Meme coins are infinite</div>
+          <p class="step-body">They self-replicate. They fragment liquidity. They promise utility and deliver obituaries. There is no natural end state. Until now.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">ANTI is the drain</div>
+          <p class="step-body">Not a competitor. Not another meme. The <em>gravitational endpoint</em> — the black hole into which all other memes eventually collapse. It does not chase liquidity. Liquidity comes to ANTI.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Liquidity migrates</div>
+          <p class="step-body">When a meme coin dies — and they all die — its holders can swap into ANTI at market rate via Aerodrome on Base. The migration is always open. There is no deadline. The door does not close.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <div class="step-title">The community buries them</div>
+          <p class="step-body">The founder opens the vote window. Holders nominate and vote on which meme coin burns next — 1 ANTI = 1 vote via Snapshot. 2,000,000 ANTI is swapped for the winning coin on Aerodrome and sent to <em>0x000...dead</em>. Permanently listed in the Meme Graveyard. <em>15 ceremonies total. Each one counts.</em></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <div class="step-title">The narrative is unfalsifiable</div>
+          <p class="step-body">Every meme coin that dies after ANTI launches is <em>proof that ANTI is right.</em> There is no bear case. Time is on our side.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <span class="footer-logo">ANTI</span>
+    <p class="footer-note">No roadmap. No promises. No surprises.</p>
+    <div class="footer-links">
+      <a href="#" onclick="showPage('tokenomics')">Tokenomics →</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ── PAGE: TOKENOMICS ────────────────────────────────────────────────── -->
+<div class="page" id="page-tokenomics">
+  <div class="inner">
+    <span class="page-eyebrow">02 — Tokenomics</span>
+    <h2 class="page-title">THE NUMBERS</h2>
+    <div class="divider"></div>
+
+    <div class="toko-grid">
+      <div class="toko-cell">
+        <div class="toko-cell-label">Total Supply</div>
+        <div class="toko-cell-val">1,000,000,000</div>
+        <div class="toko-cell-note">Fixed forever. Not a typo.</div>
+      </div>
+      <div class="toko-cell">
+        <div class="toko-cell-label">Network</div>
+        <div class="toko-cell-val">Base</div>
+        <div class="toko-cell-note">Low fees. High irony.</div>
+      </div>
+      <div class="toko-cell">
+        <div class="toko-cell-label">Buy / Sell Tax</div>
+        <div class="toko-cell-val">0 / 0</div>
+        <div class="toko-cell-note">ANTI absorbs. It does not tax.</div>
+      </div>
+      <div class="toko-cell">
+        <div class="toko-cell-label">Contract</div>
+        <div class="toko-cell-val">Renounced</div>
+        <div class="toko-cell-note">Can't rug what you can't touch.</div>
+      </div>
+    </div>
+
+    <div class="red-line"></div>
+
+    <table class="alloc-table reveal">
+      <thead>
+        <tr>
+          <th>Allocation</th>
+          <th>Tokens</th>
+          <th>%</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="lp">
+          <td>Liquidity Pool</td>
+          <td>920,000,000</td>
+          <td>92%</td>
+          <td>Locked permanently. This is not a promise. It is a transaction.</td>
+        </tr>
+        <tr>
+          <td>Ritual Burn Fund</td>
+          <td>30,000,000</td>
+          <td>3%</td>
+          <td>DAO-controlled. Locked until the first community vote passes. The community holds the match.</td>
+        </tr>
+        <tr>
+          <td>Founder — Long Term</td>
+          <td>30,000,000</td>
+          <td>3%</td>
+          <td>12mo vest, 3mo cliff. No reason to rush.</td>
+        </tr>
+        <tr>
+          <td>Founder — Operations</td>
+          <td>20,000,000</td>
+          <td>2%</td>
+          <td>Fully unlocked. Declared upfront. Novel concept.</td>
+        </tr>
+        <tr>
+          <td>Team</td>
+          <td>0</td>
+          <td>0%</td>
+          <td>Teams have meetings. Meetings have roadmaps. ANTI has neither.</td>
+        </tr>
+        <tr>
+          <td>VC / Investors</td>
+          <td>0</td>
+          <td>0%</td>
+          <td>No one got in early. Revolutionary.</td>
+        </tr>
+        <tr>
+          <td>Ecosystem / Marketing</td>
+          <td>0</td>
+          <td>0%</td>
+          <td>The ecosystem is vibes and inevitability.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <footer>
+    <span class="footer-logo">ANTI</span>
+    <p class="footer-note">Everything ends here. That was always the plan.</p>
+    <div class="footer-links">
+      <a href="#" onclick="showPage('burn')">Ritual Burn →</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ── PAGE: RITUAL BURN ───────────────────────────────────────────────── -->
+<div class="page" id="page-burn">
+  <div class="inner">
+    <span class="page-eyebrow">03 — The Ritual Burn</span>
+    <h2 class="page-title">THE FUNERAL</h2>
+    <div class="divider"></div>
+
+    <div class="burn-hero reveal">
+      <div class="burn-hero-title">THE RITUAL BURN</div>
+      <p class="burn-hero-sub">
+        The founder opens the vote window. The community nominates and votes.
+        <em>1 ANTI = 1 vote.</em> 2,000,000 ANTI is swapped for the winning meme coin
+        on Aerodrome and sent to <em>0x000...dead</em>. Permanently listed in the Meme Graveyard.
+        30,000,000 in the fund. 15 ceremonies. The ceremony is the point.
+      </p>
+    </div>
+
+    <div class="burn-steps">
+      <div class="burn-step">
+        <div class="burn-step-num">1</div>
+        <div>
+          <div class="burn-step-title">Open</div>
+          <p class="burn-step-body">The founder opens the vote window — timing at founder's discretion. <em>The fund has 15 ceremonies in it. They will be used wisely.</em></p>
+        </div>
+      </div>
+      <div class="burn-step">
+        <div class="burn-step-num">2</div>
+        <div>
+          <div class="burn-step-title">Nominate</div>
+          <p class="burn-step-body">During the open window, the community nominates meme coins for consideration. <em>Democracy of the doomed.</em></p>
+        </div>
+      </div>
+      <div class="burn-step">
+        <div class="burn-step-num">3</div>
+        <div>
+          <div class="burn-step-title">Burn</div>
+          <p class="burn-step-body">The winning meme coin is declared. <em>2,000,000 ANTI</em> is swapped for the winning meme coin on Aerodrome. Those tokens are sent to <em>0x000...dead</em> — publicly, on-chain, announced. The meme coin is consumed by its own funeral pyre.</p>
+        </div>
+      </div>
+      <div class="burn-step">
+        <div class="burn-step-num">4</div>
+        <div>
+          <div class="burn-step-title">Bury</div>
+          <p class="burn-step-body">The meme coin receives a permanent Meme Graveyard listing with the burn transaction hash. <em>The dead deserve to be remembered.</em></p>
+        </div>
+      </div>
+      <div class="burn-step">
+        <div class="burn-step-num">5</div>
+        <div>
+          <div class="burn-step-title">Repeat</div>
+          <p class="burn-step-body">The community mourns. The founder chooses when to open the next window. <em>30,000,000 in the fund. 15 ceremonies. Every one counts.</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <span class="footer-logo">ANTI</span>
+    <p class="footer-note">Founder-called. Community-driven. 15 ceremonies. The fund is finite. So are meme coins.</p>
+    <div class="footer-links">
+      <a href="#" onclick="showPage('graveyard')">Meme Graveyard →</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ── PAGE: GRAVEYARD ────────────────────────────────────────────────── -->
+<div class="page" id="page-graveyard">
+  <div class="inner">
+    <span class="page-eyebrow">04 — Meme Graveyard</span>
+    <h2 class="page-title">HERE LIE<br>THE MEMES</h2>
+    <div class="divider"></div>
+
+    <p class="graveyard-intro reveal">
+      Every meme coin that migrates into ANTI or loses a Ritual Burn vote receives a permanent listing here.
+      <em>A monument, not a product.</em> The Graveyard grows as the meme economy
+      collapses into ANTI. It will grow for a very long time.
+    </p>
+
+    <div class="tombstones">
+      <div class="tombstone">
+        <div class="tombstone-cross">✝</div>
+        <div class="tombstone-rip">R.I.P.</div>
+        <div class="tombstone-name">PEPE</div>
+        <div class="tombstone-date">2023 — 2025</div>
+        <div class="tombstone-epitaph">"It was supposed to be the frog that made it."</div>
+      </div>
+      <div class="tombstone">
+        <div class="tombstone-cross">✝</div>
+        <div class="tombstone-rip">R.I.P.</div>
+        <div class="tombstone-name">SHIB</div>
+        <div class="tombstone-date">2020 — 2025</div>
+        <div class="tombstone-epitaph">"The DOGE killer that also needed killing."</div>
+      </div>
+      <div class="tombstone">
+        <div class="tombstone-cross">✝</div>
+        <div class="tombstone-rip">R.I.P.</div>
+        <div class="tombstone-name">FLOKI</div>
+        <div class="tombstone-date">2021 — 2024</div>
+        <div class="tombstone-epitaph">"Named after a dog. Died like one."</div>
+      </div>
+      <div class="tombstone empty">
+        <span class="tombstone-waiting">Awaiting<br>Community Vote</span>
+      </div>
+      <div class="tombstone empty">
+        <span class="tombstone-waiting">Awaiting<br>Community Vote</span>
+      </div>
+      <div class="tombstone empty">
+        <span class="tombstone-waiting">Awaiting<br>Community Vote</span>
+      </div>
+    </div>
+
+    <div class="graveyard-note reveal">
+      The Graveyard is permanent. The listings are on-chain. The memes are gone.<br>
+      <em>There is dignity in it. Most meme coins do not get dignity.</em>
+    </div>
+  </div>
+  <footer>
+    <span class="footer-logo">ANTI</span>
+    <p class="footer-note">Every meme ends. ANTI is where they go.</p>
+    <div class="footer-links">
+      <a href="#" onclick="showPage('buy')">Buy ANTI →</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ── PAGE: BUY ───────────────────────────────────────────────────────── -->
+<div class="page" id="page-buy">
+  <div class="inner">
+    <span class="page-eyebrow">05 — Buy ANTI</span>
+    <div class="buy-hero">
+      <h2 class="buy-title">THE LAST<br>MEME YOU<br><span>NEED.</span></h2>
+      <p class="buy-sub">Every meme ends here. Might as well arrive early.</p>
+    </div>
+
+    <div class="buy-steps">
+      <div class="buy-step">
+        <div class="buy-step-num">01</div>
+        <div class="buy-step-title">Get a Base Wallet</div>
+        <p class="buy-step-body">Coinbase Wallet or MetaMask. Set it to Base network. Add some ETH. This is the easy part.</p>
+      </div>
+      <div class="buy-step">
+        <div class="buy-step-num">02</div>
+        <div class="buy-step-title">Go to Aerodrome</div>
+        <p class="buy-step-body">Aerodrome.finance on Base. Swap ETH for ANTI. Set slippage to 1%. Do not overthink it.</p>
+      </div>
+      <div class="buy-step">
+        <div class="buy-step-num">03</div>
+        <div class="buy-step-title">Hold</div>
+        <p class="buy-step-body">Every meme coin that dies after you buy is proof you made the right call. Wait. The narrative does the work.</p>
+      </div>
+    </div>
+
+    <div class="buy-cta-block reveal">
+      <p>BUY ANTI ON AERODROME</p>
+      <a href="https://aerodrome.finance" target="_blank">Open Aerodrome →</a>
+    </div>
+
+    <div class="contract-box reveal">
+      <div>
+        <div class="contract-label">Contract Address</div>
+        <div class="contract-addr">TBA — Announced at launch</div>
+      </div>
+      <div style="display:flex;gap:12px;flex-shrink:0;">
+        <span class="contract-badge">Renounced</span>
+        <span class="contract-badge">LP Locked</span>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <span class="footer-logo">ANTI</span>
+    <p class="footer-note">Not financial advice. ANTI has no utility. That is the utility.</p>
+    <div class="footer-links">
+      <a href="#" onclick="showPage('home')">← Back to Home</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => {
+      p.classList.remove('active');
+      p.style.display = 'none';
+    });
+    const target = document.getElementById('page-' + id);
+    target.style.display = 'block';
+    setTimeout(() => {
+      target.classList.add('active');
+      observeAnimations();
+    }, 10);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Observe scroll-triggered animations
+  function observeAnimations() {
+    const els = document.querySelectorAll('.step, .toko-cell, .burn-step, .tombstone, .buy-step, .reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 60);
+        }
+      });
+    }, { threshold: 0.1 });
+    els.forEach(el => observer.observe(el));
+  }
+
+  // Init on load
+  window.addEventListener('load', () => {
+    showPage('home');
+    observeAnimations();
+  });
+</script>
+</body>
+</html>
