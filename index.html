@@ -550,11 +550,14 @@
   .tombstone.visible { opacity: 1; transform: translateY(0); }
 
   .tombstone.empty {
-    border: 1px dashed var(--border);
-    background: transparent;
+    border: 1px dashed #444;
+    background: #0e0e0e;
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    min-height: 180px;
   }
 
   .tombstone-rip {
@@ -597,8 +600,9 @@
     font-family: var(--font-mono);
     font-size: 9px;
     letter-spacing: 2px;
-    color: var(--border);
+    color: #555;
     text-transform: uppercase;
+    text-align: center;
   }
 
   .graveyard-note {
@@ -1092,26 +1096,14 @@
     </p>
 
     <div class="tombstones">
-      <div class="tombstone">
-        <div class="tombstone-cross">✝</div>
-        <div class="tombstone-rip">R.I.P.</div>
-        <div class="tombstone-name">PEPE</div>
-        <div class="tombstone-date">2023 — 2025</div>
-        <div class="tombstone-epitaph">"It was supposed to be the frog that made it."</div>
+      <div class="tombstone empty">
+        <span class="tombstone-waiting">Awaiting<br>Community Vote</span>
       </div>
-      <div class="tombstone">
-        <div class="tombstone-cross">✝</div>
-        <div class="tombstone-rip">R.I.P.</div>
-        <div class="tombstone-name">SHIB</div>
-        <div class="tombstone-date">2020 — 2025</div>
-        <div class="tombstone-epitaph">"The DOGE killer that also needed killing."</div>
+      <div class="tombstone empty">
+        <span class="tombstone-waiting">Awaiting<br>Community Vote</span>
       </div>
-      <div class="tombstone">
-        <div class="tombstone-cross">✝</div>
-        <div class="tombstone-rip">R.I.P.</div>
-        <div class="tombstone-name">FLOKI</div>
-        <div class="tombstone-date">2021 — 2024</div>
-        <div class="tombstone-epitaph">"Named after a dog. Died like one."</div>
+      <div class="tombstone empty">
+        <span class="tombstone-waiting">Awaiting<br>Community Vote</span>
       </div>
       <div class="tombstone empty">
         <span class="tombstone-waiting">Awaiting<br>Community Vote</span>
