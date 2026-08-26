@@ -21,30 +21,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #CC0000;
-    --black: #060606;
-    --border: #222222;
-    --muted: #555555;
-    --light: #999999;
-    --white: #f0f0f0;
-    --font-display: 'Bebas Neue', sans-serif;
-    --font-mono: 'Space Mono', monospace;
-    --font-body: 'DM Mono', monospace;
+    --red:    #CC0000;
+    --black:  #060606;
+    --card:   #0E0E0E;
+    --border: #1E1E1E;
+    --hair:   #2C2C2C;
+    --muted:  #6A6A6A;
+    --dim:    #454545;
+    --light:  #999999;
+    --body:   #d0d0d0;
+    --white:  #f0f0f0;
+    --font-display: 'Bebas Neue', 'Haettenschweiler', sans-serif;
+    --font-mono:    'Space Mono', ui-monospace, monospace;
+    --font-body:    'DM Mono', ui-monospace, monospace;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html { scroll-behavior: smooth; }
+
   body {
     background: var(--black);
-    color: var(--white);
+    color: var(--body);
     font-family: var(--font-body);
     font-size: 14px;
-    line-height: 1.7;
+    line-height: 1.75;
     cursor: crosshair;
     overflow-x: hidden;
   }
 
-  /* ── NOISE OVERLAY ─────────────────────────────── */
   body::before {
     content: '';
     position: fixed;
@@ -55,17 +60,48 @@
     opacity: 0.4;
   }
 
-  /* ── STAGE ─────────────────────────────────────── */
-  main {
+  /* ── NAV ───────────────────────────────────────── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    padding: 16px 28px;
+    background: rgba(6,6,6,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  nav .mark { color: var(--red); font-weight: 700; margin-right: auto; }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 1px solid transparent;
+    transition: color .25s ease, border-color .25s ease;
+  }
+
+  nav a:hover, nav a:focus-visible { color: var(--red); border-bottom-color: var(--red); outline: none; }
+
+  .wrap { max-width: 740px; margin: 0 auto; padding: 0 28px; }
+
+  /* ── HERO ──────────────────────────────────────── */
+  header.hero {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    min-height: 100svh;
-    padding: 64px 32px;
     text-align: center;
+    min-height: 82vh;
+    padding: 80px 28px 64px;
     overflow: hidden;
   }
 
@@ -77,32 +113,25 @@
     letter-spacing: -10px;
     pointer-events: none;
     user-select: none;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     white-space: nowrap;
     animation: breathe 8s ease-in-out infinite;
   }
 
   @keyframes breathe {
-    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
-    50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.02); }
+    0%, 100% { opacity: .6; transform: translate(-50%,-50%) scale(1); }
+    50%      { opacity: 1;  transform: translate(-50%,-50%) scale(1.02); }
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: none; }
-  }
-
-  .wordmark {
+  h1 {
     position: relative;
     font-family: var(--font-display);
-    font-size: clamp(84px, 17vw, 210px);
+    font-size: clamp(84px, 17vw, 200px);
     letter-spacing: 12px;
-    line-height: 0.9;
+    line-height: .9;
     color: var(--red);
-    margin-right: -12px; /* optical: cancel trailing letter-space */
-    animation: fadeUp 0.8s 0.1s ease both;
+    margin-right: -12px;
   }
 
   .tagline {
@@ -111,38 +140,131 @@
     font-size: 13px;
     font-style: italic;
     color: var(--light);
-    max-width: 540px;
-    margin-top: 28px;
-    animation: fadeUp 0.8s 0.25s ease both;
-  }
-
-  .rule {
-    position: relative;
-    width: 40px;
-    height: 1px;
-    background: var(--border);
-    margin: 44px 0;
-    animation: fadeUp 0.8s 0.4s ease both;
+    margin-top: 26px;
   }
 
   .status {
     position: relative;
+    margin-top: 52px;
+    border: 1px solid var(--red);
+    padding: 14px 22px;
     font-family: var(--font-mono);
-    font-size: 15px;
+    font-size: 12px;
     color: var(--white);
-    max-width: 540px;
-    animation: fadeUp 0.8s 0.5s ease both;
+    max-width: 460px;
   }
 
-  .links {
-    position: relative;
-    display: flex;
-    gap: 28px;
-    margin-top: 56px;
-    animation: fadeUp 0.8s 0.65s ease both;
+  .status b { color: var(--red); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 6px; font-size: 10px; }
+
+  /* ── SECTIONS ──────────────────────────────────── */
+  section { padding: 90px 0 10px; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--red);
   }
 
-  .links a {
+  h2 {
+    font-family: var(--font-display);
+    font-size: 44px;
+    letter-spacing: 3px;
+    color: var(--white);
+    line-height: 1;
+    margin: 12px 0 6px;
+  }
+
+  .lede {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-style: italic;
+    color: var(--muted);
+    padding-bottom: 34px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin: 54px 0 18px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  p { margin-bottom: 17px; }
+  p.lead { color: var(--white); }
+  p.aside { color: var(--light); font-style: italic; }
+  p.tiny { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+  ul { list-style: none; margin: 0 0 20px; }
+
+  li { position: relative; padding-left: 26px; margin-bottom: 9px; }
+  li::before { content: '—'; position: absolute; left: 0; color: var(--red); }
+
+  .pull {
+    border-left: 2px solid var(--red);
+    background: var(--card);
+    padding: 17px 22px;
+    margin: 26px 0;
+    color: var(--white);
+  }
+
+  .costs { width: 100%; border-collapse: collapse; margin: 6px 0 20px; font-size: 13px; }
+  .costs td { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .costs td:last-child { text-align: right; font-family: var(--font-mono); color: var(--white); white-space: nowrap; }
+
+  /* ── GRAVEYARD ─────────────────────────────────── */
+  .yard {
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 56px 28px;
+    text-align: center;
+    margin: 34px 0 26px;
+  }
+
+  .yard .count {
+    font-family: var(--font-display);
+    font-size: 96px;
+    line-height: 1;
+    color: var(--red);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .yard .unit {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  .yard .empty {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--white);
+    margin-top: 30px;
+    padding-top: 26px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── FOOTER ────────────────────────────────────── */
+  footer {
+    margin-top: 100px;
+    padding: 44px 0 90px;
+    border-top: 1px solid var(--red);
+    text-align: center;
+  }
+
+  .flinks { display: flex; gap: 26px; justify-content: center; margin-bottom: 26px; flex-wrap: wrap; }
+
+  .flinks a {
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 3px;
@@ -151,56 +273,143 @@
     text-decoration: none;
     padding-bottom: 4px;
     border-bottom: 1px solid transparent;
-    transition: color 0.25s ease, border-color 0.25s ease;
+    transition: color .25s ease, border-color .25s ease;
   }
 
-  .links a:hover,
-  .links a:focus-visible {
-    color: var(--red);
-    border-bottom-color: var(--red);
-    outline: none;
-  }
+  .flinks a:hover, .flinks a:focus-visible { color: var(--red); border-bottom-color: var(--red); outline: none; }
 
-  footer {
-    position: relative;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 1px;
-    color: #3a3a3a;
-    margin-top: 72px;
-    animation: fadeUp 0.8s 0.8s ease both;
-  }
+  .fnote { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: #3a3a3a; }
 
-  @media (max-width: 600px) {
-    .wordmark { letter-spacing: 8px; margin-right: -8px; }
-    .status { font-size: 14px; }
-    .links { gap: 20px; flex-wrap: wrap; justify-content: center; }
+  @media (max-width: 620px) {
+    nav { gap: 16px; padding: 14px 20px; letter-spacing: 2px; }
+    .wrap { padding: 0 20px; }
+    h1 { letter-spacing: 8px; margin-right: -8px; }
+    h2 { font-size: 34px; }
+    .yard { padding: 40px 20px; }
+    .yard .count { font-size: 68px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
 </head>
 <body>
 
-<main>
+<nav>
+  <span class="mark">ANTI</span>
+  <a href="#truth">What&rsquo;s True</a>
+  <a href="#graveyard">Graveyard</a>
+  <a href="https://x.com/_antitoken" target="_blank" rel="noopener">X</a>
+</nav>
+
+<header class="hero">
   <div class="bg-text" aria-hidden="true">ANTI</div>
-
-  <h1 class="wordmark">ANTI</h1>
-
+  <h1>ANTI</h1>
   <p class="tagline">Every meme ends. ANTI is where they go.</p>
+  <div class="status">
+    <b>Status</b>
+    Not launched. There is no contract, no token, and nothing to buy. Any contract address claiming to be ANTI is not ours.
+  </div>
+</header>
 
-  <div class="rule" aria-hidden="true"></div>
+<div class="wrap">
 
-  <p class="status">Back when there&rsquo;s something true to say.</p>
+  <section id="truth">
+    <span class="eyebrow">The document</span>
+    <h2>WHAT&rsquo;S TRUE</h2>
+    <p class="lede">A list of things that are currently true. Revised when they stop being true.</p>
 
-  <nav class="links">
+    <h3>What this is</h3>
+    <p class="lead">Meme coins end. All of them. There is no drain at the bottom of the pool.</p>
+    <p>ANTI is the drain. Not a competitor. The destination.</p>
+    <p>No product. No roadmap. No promises.</p>
+
+    <h3>Where it launches</h3>
+    <p class="lead">ANTI launches on Chewpad, on Robinhood Chain. The sale is priced in ANON.</p>
+    <p class="aside">agentchew.com</p>
+
+    <h3>What that means</h3>
+    <p>The founder does not set supply and does not set liquidity. No tokens are allocated to anyone &mdash; not to a team, not to investors, not to advisors, not to marketing, not to the founder.</p>
+    <p>The founder can buy, the same way anyone else can. A purchase is not an allocation. That difference is the whole point.</p>
+    <p>That is not restraint. Launching this way means an allocation is not among the options.</p>
+    <div class="pull">That is a better guarantee than principle.</div>
+
+    <h3>The Ritual Burn</h3>
+    <p class="lead">A meme coin dies. It gets buried.</p>
+    <p>The project acquires a quantity of the dead coin and sends it to a burn address. The transaction is public. The coin receives a permanent listing in the Meme Graveyard, with its burn hash.</p>
+    <p>Dead coins are cheap. That is the entry requirement. One ceremony costs a few dollars for the coin, plus gas.</p>
+  <p>The quantity burned will often be enormous. This is not a flex. It is a consequence of the coin being worthless.</p>
+    <p>There is no limit on the number of ceremonies. A cemetery that stops accepting bodies is a strange cemetery.</p>
+
+    <h3>What counts as dead</h3>
+  <p class="lead">Two conditions. Both required.</p>
+  <ul>
+    <li><strong>Illiquid</strong> &mdash; under $250 across every pool, for at least 30 days.</li>
+    <li><strong>Flatlined</strong> &mdash; no transfer of any kind for 90 days.</li>
+  </ul>
+  <p>That is the whole test. There is no assessment of whether a coin was a scam, because that asks what people meant to do. These ask whether anyone is trading it.</p>
+  <p>A coin with no liquidity at all cannot be bought, so it cannot be buried. Those are not listed.</p>
+  <div class="pull">The graveyard does not care how you died.</div>
+
+  <h3>How a coin is chosen</h3>
+    <p class="lead">The graveyard does not choose. It has a queue.</p>
+    <p>Anyone can nominate. No token required, no fee, no standing. Nominations join a public queue in the order they arrive.</p>
+    <p>At ceremony time we take whatever is at the front and check it against the two conditions. If it qualifies, it is buried. If it does not, it is discarded and the next name moves up.</p>
+    <p>Nominating costs nothing. A long queue costs nothing. One ceremony at a time, however many names are waiting.</p>
+    <p class="tiny">Nominations open after launch.</p>
+    <div class="pull">There is no vote. The order of a line is not a thing worth voting on.</div>
+
+    <h3>Before any burial</h3>
+  <p class="lead">Every burial is announced before it happens, with the evidence &mdash; the pool balances, the date of the last transfer, and where to check both.</p>
+  <p>Then 72 hours. If the finding is wrong, say so inside that window.</p>
+  <div class="pull">Nominations that fail are published too, with the reason. A queue that only ever produces burials is a rubber stamp.</div>
+
+  <h3>How the burn is paid for</h3>
+    <p class="lead">Not with ANTI.</p>
+    <p>There is no ANTI-denominated burn fund, and none is needed. Nothing in the ceremony requires ANTI to be sold, so no ANTI is sold.</p>
+    <p>Ceremonies are funded in SOL from a public founder wallet. The address is published. The balance is visible. It goes down.</p>
+    <p>When it is empty, ceremonies stop until it is refilled. You will see that before we say it.</p>
+    <div class="pull">Holders do not fund the graveyard. The founder does.</div>
+
+    <h3>What the founder holds</h3>
+    <p>To be stated exactly &mdash; an address and an amount &mdash; before launch.</p>
+    <p>Whatever the number, it will be a purchase made through the same sale as everyone else, disclosed with its transaction hash. There is no allocation to disclose, because there is no allocation.</p>
+
+    <h3>What is not decided</h3>
+    <p>This section exists because every other document of this kind pretends it does not need one.</p>
+    <ul>
+      <li>The size of the founder&rsquo;s own position, and whether it is acquired at launch or afterward on the open market.</li>
+    </ul>
+    <div class="pull">Nothing above will be stated as fact until it is one.</div>
+  </section>
+
+  <section id="graveyard">
+    <span class="eyebrow">Here lie</span>
+    <h2>THE MEME GRAVEYARD</h2>
+    <p class="lede">Every coin buried is listed here, permanently, with the evidence and the transaction that buried it.</p>
+
+    <div class="yard">
+      <div class="count">0</div>
+      <div class="unit">Buried</div>
+      <p class="empty">No one is buried here yet.</p>
+    </div>
+
+    <p>The graveyard opens when ANTI does. Nothing is listed in advance, and nothing is listed that cannot be checked on-chain.</p>
+    <p>It will grow slowly at first and then not slowly. That is not a projection. It is what happens to meme coins.</p>
+  </section>
+
+</div>
+
+<footer>
+  <div class="flinks">
+    <a href="#truth">What&rsquo;s True</a>
+    <a href="#graveyard">Graveyard</a>
     <a href="https://x.com/_antitoken" target="_blank" rel="noopener">X</a>
-  </nav>
-
-  <footer>Not financial advice. Not a whitepaper. Not a promise.</footer>
-</main>
+  </div>
+  <p class="fnote">Not financial advice. Not a whitepaper. Not a promise.</p>
+</footer>
 
 </body>
 </html>
