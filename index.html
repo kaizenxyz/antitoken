@@ -295,26 +295,37 @@
      Fixed, so nothing scrolls back out: by the footer
      both margins are full.                             */
 
+  /* The ground spans the whole window, not just the margins. Confining
+     it to the gutters lifted them a shade above the text column and drew
+     a hard vertical seam down both sides — the page read as three
+     panels instead of one. */
+  .ground {
+    position: fixed;
+    inset: auto 0 0 0;
+    height: 52%;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(to top, rgba(255,255,255,0.022), transparent 74%);
+  }
+
   .gutter {
     position: fixed;
     top: 0;
     bottom: 0;
-    width: calc((100vw - 740px) / 2);
+    width: calc((100vw - 700px) / 2);
     pointer-events: none;
     z-index: 1;
-    overflow: hidden;
+    /* Fade toward the text rather than clipping at it. A stone sliced off
+       by an invisible edge is what made the margins look like bars. */
+    -webkit-mask-image: linear-gradient(to var(--fade), #000 46%, transparent 96%);
+            mask-image: linear-gradient(to var(--fade), #000 46%, transparent 96%);
   }
-  .gutter.l { left: 0; }
-  .gutter.r { right: 0; }
+  .gutter.l { left: 0;  --fade: right; }
+  .gutter.r { right: 0; --fade: left; }
 
-  /* the ground the stones stand in — barely there */
-  .gutter::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 55%;
-    background: linear-gradient(to top, rgba(255,255,255,0.028), transparent 72%);
-  }
+  /* Text sits above the yard, so stones may now run behind the column
+     and dissolve there instead of stopping dead at its edge. */
+  .hero, .wrap, footer { position: relative; z-index: 2; }
 
   .stone {
     position: absolute;
@@ -352,6 +363,7 @@
 </head>
 <body>
 
+<div class="ground" aria-hidden="true"></div>
 <div class="gutter l" aria-hidden="true"></div>
 <div class="gutter r" aria-hidden="true"></div>
 
@@ -527,7 +539,7 @@
     /* Stratified, not random: pure random clumps, and a clumped yard
        reads as a mistake rather than as a yard. Each stone gets its own
        lane across the gutter, jittered inside it. */
-    var out  = 5 + (slot / (slots - 1)) * 68 + (r() - 0.5) * 7;
+    var out  = 4 + (slot / (slots - 1)) * 74 + (r() - 0.5) * 7;
     var lift = 5 + depth * 44;                         /* % up from floor   */
     var tilt = (r() - 0.5) * 7;
     var fill = 'rgb(' + Math.round(30 - depth * 12) + ',' +
