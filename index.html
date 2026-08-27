@@ -257,8 +257,7 @@
   /* ── FOOTER ────────────────────────────────────── */
   footer {
     margin-top: 100px;
-    padding: 44px 0 90px;
-    border-top: 1px solid var(--red);
+    padding: 0 0 90px;
     text-align: center;
   }
 
@@ -289,13 +288,72 @@
     .yard .count { font-size: 68px; }
   }
 
+
+  /* ── GUTTERS ───────────────────────────────────────
+     The cemetery fills as you read. Stones rise once,
+     when their part of the page arrives, and then stop.
+     Fixed, so nothing scrolls back out: by the footer
+     both margins are full.                             */
+
+  .gutter {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: calc((100vw - 740px) / 2);
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+  .gutter.l { left: 0; }
+  .gutter.r { right: 0; }
+
+  /* the ground the stones stand in — barely there */
+  .gutter::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 55%;
+    background: linear-gradient(to top, rgba(255,255,255,0.028), transparent 72%);
+  }
+
+  .stone {
+    position: absolute;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 900ms ease-out, transform 900ms cubic-bezier(.16,.84,.44,1);
+    will-change: opacity, transform;
+  }
+  .stone.up { opacity: 1; transform: translateY(0); }
+  .stone svg { display: block; }
+
+  /* The footer's red rule used to run the full width of the window and
+     draw straight through the stones, which read as a rendering fault.
+     It now spans the text column only, so the yard stays whole and the
+     rule still closes the page. */
+  footer { border-top: none; position: relative; }
+  footer::before {
+    content: '';
+    display: block;
+    width: 740px;
+    max-width: calc(100% - 40px);
+    margin: 0 auto 44px;
+    border-top: 1px solid var(--red);
+  }
+
+  /* Below this the margins are too narrow to hold anything. */
+  @media (max-width: 1100px) { .gutter { display: none; } }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition: none !important; }
+    .stone { transform: none; }
   }
 </style>
 </head>
 <body>
+
+<div class="gutter l" aria-hidden="true"></div>
+<div class="gutter r" aria-hidden="true"></div>
 
 <nav>
   <span class="mark">ANTI</span>
@@ -412,6 +470,141 @@
   </div>
   <p class="fnote">Not financial advice. Not a whitepaper. Not a promise.</p>
 </footer>
+
+<script>
+/* ── the cemetery ────────────────────────────────────────────────
+   Stones rise once, when their part of the page arrives, and then
+   stop. Nothing loops, nothing drifts. The margins fill as you read
+   and stay filled.
+
+   Seeded, so the yard is laid out the same way on every visit —
+   a cemetery that rearranged itself between readings would be a
+   different kind of site.                                          */
+(function () {
+  var L = document.querySelector('.gutter.l');
+  var R = document.querySelector('.gutter.r');
+  if (!L || !R || !window.IntersectionObserver) return;
+  if (window.matchMedia('(max-width: 1100px)').matches) return;
+
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  /* Five ways to mark a grave. Drawn to a 100-wide box and scaled. */
+  var SHAPES = [
+    function (h) {   /* round-top headstone with shoulders */
+      return '<path d="M14 ' + h + ' V38 Q14 8 50 8 Q86 8 86 38 V' + h + ' Z"/>' +
+             '<rect x="6" y="' + (h - 9) + '" width="88" height="9"/>';
+    },
+    function (h) {   /* plain slab */
+      return '<path d="M20 ' + h + ' V24 Q20 14 30 14 H70 Q80 14 80 24 V' + h + ' Z"/>' +
+             '<rect x="12" y="' + (h - 8) + '" width="76" height="8"/>';
+    },
+    function (h) {   /* cross */
+      return '<rect x="42" y="6" width="16" height="' + (h - 6) + '"/>' +
+             '<rect x="22" y="30" width="56" height="15"/>';
+    },
+    function (h) {   /* obelisk */
+      return '<path d="M36 ' + h + ' L36 34 L50 6 L64 34 L64 ' + h + ' Z"/>' +
+             '<rect x="26" y="' + (h - 10) + '" width="48" height="10"/>';
+    },
+    function (h) {   /* broken stump */
+      return '<path d="M24 ' + h + ' V40 L38 26 L48 44 L62 22 L72 36 V' + h + ' Z"/>';
+    }
+  ];
+
+  /* One stone. depth 0 = close and tall, depth 1 = far and faint. */
+  function build(side, depth, slot, slots, r) {
+    var h    = Math.round(140 - depth * 104);          /* 140px .. 36px  */
+    var w    = Math.round(h * (0.72 + r() * 0.22));
+    /* Stratified, not random: pure random clumps, and a clumped yard
+       reads as a mistake rather than as a yard. Each stone gets its own
+       lane across the gutter, jittered inside it. */
+    var out  = 5 + (slot / (slots - 1)) * 68 + (r() - 0.5) * 7;
+    var lift = 5 + depth * 44;                         /* % up from floor   */
+    var tilt = (r() - 0.5) * 7;
+    var fill = 'rgb(' + Math.round(30 - depth * 12) + ',' +
+                        Math.round(30 - depth * 12) + ',' +
+                        Math.round(31 - depth * 12) + ')';
+
+    var el = document.createElement('div');
+    el.className = 'stone';
+    el.style[side === 'l' ? 'left' : 'right'] = out.toFixed(2) + '%';
+    el.style.bottom = lift.toFixed(2) + '%';
+    el.style.setProperty('--o', (0.92 - depth * 0.55).toFixed(3));
+    el.style.transform = 'translateY(30px)';
+    el.innerHTML =
+      '<svg width="' + w + '" height="' + h + '" viewBox="0 0 100 ' + h + '" ' +
+      'style="transform:rotate(' + tilt.toFixed(2) + 'deg);fill:' + fill + ';' +
+      'stroke:#2C2C2C;stroke-width:' + (depth < 0.45 ? 1.1 : 0) + '">' +
+      SHAPES[Math.floor(r() * SHAPES.length)](h - 2) + '</svg>';
+    el.dataset.opacity = (0.92 - depth * 0.55).toFixed(3);
+    return el;
+  }
+
+  var PER_SIDE = 11;
+  var stones = [];
+  ['l', 'r'].forEach(function (side, si) {
+    var r = rng(si === 0 ? 20260827 : 77213311);
+    var host = si === 0 ? L : R;
+
+    /* Lanes shuffled, so horizontal position carries no information about
+       depth — otherwise the stones march away in a diagonal line. */
+    var lanes = [];
+    for (var k = 0; k < PER_SIDE; k++) lanes.push(k);
+    for (var k = lanes.length - 1; k > 0; k--) {
+      var j = Math.floor(r() * (k + 1));
+      var t = lanes[k]; lanes[k] = lanes[j]; lanes[j] = t;
+    }
+
+    for (var i = 0; i < PER_SIDE; i++) {
+      var depth = i / (PER_SIDE - 1);
+      depth = Math.min(1, Math.max(0, depth + (r() - 0.5) * 0.12));
+      var el = build(side, depth, lanes[i], PER_SIDE, r);
+      host.appendChild(el);
+      stones.push({ el: el, depth: depth });
+    }
+  });
+
+  /* Fill from the far distance forward, so the yard grows toward you. */
+  stones.sort(function (a, b) { return b.depth - a.depth; });
+
+  var marks = Array.prototype.slice.call(document.querySelectorAll('section h3'));
+  if (!marks.length) return;
+  var per = Math.ceil(stones.length / marks.length);
+  var reached = -1;
+
+  function raise(upTo) {
+    if (upTo <= reached) return;
+    for (var b = reached + 1; b <= upTo; b++) {
+      var batch = stones.slice(b * per, (b + 1) * per);
+      batch.forEach(function (s, i) {
+        var go = function () {
+          s.el.style.opacity = s.el.dataset.opacity;
+          s.el.style.transform = 'translateY(0)';
+        };
+        still ? go() : setTimeout(go, i * 120);
+      });
+    }
+    reached = upTo;
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) raise(marks.indexOf(e.target));
+    });
+  }, { rootMargin: '0px 0px -22% 0px' });
+
+  marks.forEach(function (m) { io.observe(m); });
+})();
+</script>
 
 </body>
 </html>
